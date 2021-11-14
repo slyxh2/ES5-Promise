@@ -9,21 +9,19 @@
             if (self.PromiseState === 'pending') {
                 self.PromiseState = state;
                 self.PromiseResult = result;
-                callbacks = state === 'fulfilled' ? self.fulfilledCallbacks : self.rejectedCallbacks;
-                for (var i = 0; i < callbacks.length; i++) {
-                    callbacks[i](result);
-                }
+                setTimeout(function () {
+                    callbacks = state === 'fulfilled' ? self.fulfilledCallbacks : self.rejectedCallbacks;
+                    for (var i = 0; i < callbacks.length; i++) {
+                        callbacks[i](result);
+                    }
+                })
             }
         }
         var resolve = function resolve(result) {
-            setTimeout(() => {
-                run('fulfilled', result);
-            })
+            run('fulfilled', result);
         };
         var reject = function reject(result) {
-            setTimeout(() => {
-                run('rejected', result);
-            })
+            run('rejected', result);
         };
         try {
             executor(resolve, reject);
@@ -37,9 +35,13 @@
         then: function (onfuifilled, onrejected) {
             var self = this;
             if (self.PromiseState === 'fulfilled') {
-                onfuifilled(self.PromiseResult);
+                setTimeout(function () {
+                    onfuifilled(self.PromiseResult);
+                })
             } else if (self.PromiseState === 'rejected') {
-                onrejected(self.PromiseResult);
+                setTimeout(function () {
+                    onrejected(self.PromiseResult);
+                })
             } else {
                 self.fulfilledCallbacks.push(onfuifilled);
                 self.rejectedCallbacks.push(onrejected);
